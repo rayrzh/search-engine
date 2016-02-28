@@ -28,7 +28,7 @@ import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
 import javax.swing.JTextPane;
 
-public class HelloSearch {
+public class Humongous {
 
 	private JFrame frame;
 	private JPanel panel;
@@ -52,7 +52,7 @@ public class HelloSearch {
 		EventQueue.invokeLater(new Runnable() {
 			public void run() {
 				try {
-					HelloSearch window = new HelloSearch();
+					Humongous window = new Humongous();
 					window.frame.setVisible(true);
 				} catch (Exception e) {
 					e.printStackTrace();
@@ -64,7 +64,7 @@ public class HelloSearch {
 	/**
 	 * Create the application.
 	 */
-	public HelloSearch() {
+	public Humongous() {
 		initialize();
 	}
 
