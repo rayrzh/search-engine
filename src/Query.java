@@ -30,7 +30,7 @@ public class Query {
 
 	ArrayList<ArrayList<String>> qTerms = new ArrayList<ArrayList<String>>();
 
-	private void query(String q) {
+	public void query(String q) {
 
 		qTerms.add(new ArrayList<String>()); // "0-9"
 		qTerms.add(new ArrayList<String>()); // "a-f"
@@ -70,24 +70,16 @@ public class Query {
 		// have to add log
 		Iterator iter = query.entrySet().iterator();
 		while (iter.hasNext()) {
-			Entry<String,Double> entry = (Entry<String,Double>) iter.next();
+			Entry<String, Double> entry = (Entry<String, Double>) iter.next();
 			String key = entry.getKey();
 			query.put(key, 1 + Math.log10(query.get(key)));
-//				Object val = entry.getValue();
-//				System.out.println(key+" "+val);
 		}
-		try
-		{
+		try {
 			System.out.println(qTerms.toString());
-			System.out.println("kDocument");
 			kDocument();
-		}
-		catch (ClassNotFoundException e)
-		{
+		} catch (ClassNotFoundException e) {
 			e.printStackTrace();
-		}
-		catch (IOException e)
-		{
+		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
@@ -95,30 +87,27 @@ public class Query {
 	private void kDocument() throws ClassNotFoundException, IOException {
 		// save index and statistics to file
 		String[] query = { "0-9", "a-f", "g-l", "m-r", "s-z" };
-		for (int i = 0; i < qTerms.size(); i++) 
-		{
-			if(qTerms.get(i).isEmpty())
+		for (int i = 0; i < qTerms.size(); i++) {
+			if (qTerms.get(i).isEmpty())
 				continue;
 			File file = new File(INDEX_PATH + query[i] + ".dat");
 			FileInputStream fis = new FileInputStream(file);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 
 			ArrayList<Document> docList = new ArrayList<Document>();
-
+			
 			try {
 				Pair pair = null;
 				while ((pair = (Pair) ois.readObject()) != null) {
-					System.out.println(i);
-					for (int j = 0; j < qTerms.get(i).size(); j++) {
-						System.out.println(i + " " + j);
-						if (qTerms.get(i).get(j).compareTo(pair.getKey()) == 0){
-							if (qMap.containsKey((String) pair.getKey())) {
-								docList = (ArrayList<Document>) pair.getValue();
-								for (int t = 0; t < Math.min(5, docList.size()); t++) {
-									qMap.get((String) pair.getKey()).add(docList.get(i));
-								}
-								System.out.println("found");
+					if (qTerms.get(i).contains(pair.getKey())) {
+						System.out.println(pair.getKey());
+						if (qMap.containsKey((String) pair.getKey())) {
+							docList = (ArrayList<Document>) pair.getValue();
+							for (int t = 0; t < Math.min(5, docList.size()); t++) {
+								System.out.print(docList.get(t).getDocName()+" ");
+								qMap.get((String) pair.getKey()).add(docList.get(t));
 							}
+							System.out.println("found");
 						}
 					}
 				}
@@ -130,16 +119,16 @@ public class Query {
 			ois.close();
 			fis.close();
 		}
-		// Iterator iter = qMap.entrySet().iterator();
-		// while (iter.hasNext()) {
-		// Map.Entry entry = (Map.Entry) iter.next();
-		// Object key = entry.getKey();
-		// System.out.println((String)key+":");
-		// ArrayList<Document> val =(ArrayList<Document>) entry.getValue();
-		// for(int i=0;i<val.size();i++){
-		// System.out.println(val.get(i).getDocName());
-		// }
-		// }
+//		Iterator iter = qMap.entrySet().iterator();
+//		while (iter.hasNext()) {
+//			Map.Entry entry = (Map.Entry) iter.next();
+//			Object key = entry.getKey();
+//			System.out.println((String) key + ":");
+//			ArrayList<Document> val = (ArrayList<Document>) entry.getValue();
+//			for (int i = 0; i < val.size(); i++) {
+//				System.out.println(val.get(i).getDocName());
+//			}
+//		}
 	}
 
 	private ArrayList<Entry<String, Double>> getResult() {
@@ -182,67 +171,52 @@ public class Query {
 			// String key = entry.getKey();
 			// Double val = entry.getValue();
 			// System.out.println(key+" "+val);
-			// i++;
+			 i++;
 		}
 		return ranking;
 	}
-	
-	public String getResultString()
-	{
+
+	public String getResultString() {
 		ArrayList<Entry<String, Double>> ranking = getResult();
 		String resultString = "";
-		
-		for(Entry<String, Double> result: ranking)
-		{
+
+		for (Entry<String, Double> result : ranking) {
 			String fileName = result.getKey();
-			
+
 			JSONParser parser = new JSONParser();
 			Object obj = null;
 			FileReader fr = null;
-			try 
-			{
+			try {
 				fr = new FileReader(PAGE_PATH + fileName + ".json");
 				obj = parser.parse(fr);
 				JSONObject jsonObject = (JSONObject) obj;
 				String title = ((String) jsonObject.get("title"));
-				String text = ((String) jsonObject.get("text")).substring(0, 20) + "...";
+//				String text = ((String) jsonObject.get("text")).substring(0, 20) + "...";
 				String url = (String) jsonObject.get("url");
 				fr.close();
-				
-				resultString += "<p>" + title + "</p>";
-				resultString += "<p>" + text + "</p>";
-				resultString += "<p><U>" + url + "</U></p>"; 
-				resultString += "<p>" + result.getValue() + "</p>";
-				
-			} 
-			catch (org.json.simple.parser.ParseException e) 
-			{
+
+				resultString += "<p>" +title + "</p>";
+//				resultString += "<p>" + text + "</p>";
+				resultString += "<p><a href=\"" + url + "\">" + url + "</a></p>";
+				resultString += "<p>Score: " + result.getValue() + "</p>";
+				resultString += "<p></p>";
+
+			} catch (org.json.simple.parser.ParseException e) {
 				e.printStackTrace();
-			} 
-			catch (FileNotFoundException e) 
-			{
+			} catch (FileNotFoundException e) {
 				e.printStackTrace();
-			} 
-			catch (IOException e) 
-			{
+			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			
+
 		}
 		return resultString;
 	}
 
-	public static void main(String[] args) {
-		Query q = new Query();
-		String qeury = "these theory time"; // just for test
-		q.query(qeury);
-//		try {
-//			q.kDocument();
-//		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-		System.out.println(q.getResultString());
-	}
+//	public static void main(String[] args) {
+//		Query q = new Query();
+//		String qeury = "these theory time"; // just for test
+//		q.query(qeury);
+//		System.out.println(q.getResultString());
+//	}
 }

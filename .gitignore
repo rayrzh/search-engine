@@ -1,6 +1,8 @@
 /bin/
 *.tar
+*.jpg
 *.txt
 *.dat
+*.zip
 /src/update/
 /CrawledPages/
