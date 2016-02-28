@@ -1,3 +1,4 @@
+package search;
 import java.awt.EventQueue;
 
 import javax.swing.JFrame;
@@ -20,10 +21,12 @@ import java.awt.Dimension;
 import javax.swing.JLabel;
 import javax.swing.SwingConstants;
 import java.awt.Font;
+
 import javax.swing.JPanel;
 import javax.swing.JTextArea;
 import javax.swing.ImageIcon;
 import javax.swing.JScrollPane;
+import javax.swing.JTextPane;
 
 public class HelloSearch {
 
@@ -39,8 +42,8 @@ public class HelloSearch {
 	private JButton saveButton;
 	private JTextField searchField;
 	private JLabel searchLabel;
-	private JTextArea resultArea;
 	private JScrollPane scroll;
+	private JTextPane resultPane;
 
 	/**
 	 * Launch the application.
@@ -73,7 +76,7 @@ public class HelloSearch {
 		frame.setBounds(100, 100, 450, 300);
 		frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		frame.setMinimumSize(new Dimension(450, 300));
-		frame.setMaximumSize(new Dimension(900, 600));
+		frame.setMaximumSize(new Dimension(1350, 900));
 		frame.getContentPane().setLayout(new BorderLayout());
 		
 		addComponentToPane(frame.getContentPane());
@@ -117,14 +120,15 @@ public class HelloSearch {
 				if(!query.isEmpty())
 				{
 					System.out.println(searchField.getText());
-					getText();
+					getText(); 
+					frame.setBounds(100, 100, 900, 600);
 					((CardLayout) panel.getLayout()).show(panel, RESULT);
 				}
 			}
 		});
 		searchPanel.add(searchButton);
 		
-		searchLabel = new JLabel("Hello Search!");
+		searchLabel = new JLabel("humongous!");
 		searchLabel.setIcon(new ImageIcon(System.getProperty("user.dir") + File.separator + "src" + File.separator + "www.png"));
 		springLayout.putConstraint(SpringLayout.NORTH, searchLabel, 43, SpringLayout.NORTH, searchPanel);
 		springLayout.putConstraint(SpringLayout.WEST, searchLabel, 122, SpringLayout.WEST, searchPanel);
@@ -143,14 +147,8 @@ public class HelloSearch {
 		resultPanel = new JPanel();
 		SpringLayout springLayout = new SpringLayout();
 		resultPanel.setLayout(springLayout);
-		searchPanel.setBounds(100, 100, 450, 300);
-		
-		resultArea = new JTextArea();
-		resultArea.setWrapStyleWord(true);
-		resultArea.setLineWrap(true);
-		resultArea.setText("Result");
-		resultArea.setEditable(false);
-		scroll = new JScrollPane (resultArea, JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
+		searchPanel.setBounds(100, 100, 900, 600);
+		scroll = new JScrollPane (JScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED, JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		springLayout.putConstraint(SpringLayout.WEST, scroll, 24, SpringLayout.WEST, resultPanel);
 		springLayout.putConstraint(SpringLayout.NORTH, scroll, 42, SpringLayout.NORTH, resultPanel);
 		springLayout.putConstraint(SpringLayout.SOUTH, scroll, -20, SpringLayout.SOUTH, resultPanel);
@@ -167,7 +165,7 @@ public class HelloSearch {
 				{
 					PrintWriter pw = new PrintWriter(new File(System.getProperty("user.dir") + File.separator
 									+ searchField.getText() + ".txt"));
-					pw.write(resultArea.getText());
+					pw.write(resultPane.getText());
 					pw.flush();
 					pw.close();
 				} 
@@ -181,11 +179,17 @@ public class HelloSearch {
 		
 		backButton = new JButton("Back");
 		springLayout.putConstraint(SpringLayout.SOUTH, backButton, -6, SpringLayout.NORTH, scroll);
+		
+		resultPane = new JTextPane();
+		resultPane.setContentType("text/html");
+		resultPane.setEditable(false);
+		scroll.setViewportView(resultPane);
 		springLayout.putConstraint(SpringLayout.EAST, backButton, -6, SpringLayout.WEST, saveButton);
 		backButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) 
 			{
 				searchField.setText("");
+				frame.setBounds(100, 100, 450, 300);
 				((CardLayout) panel.getLayout()).show(panel, SEARCH);
 			}
 		});
@@ -194,6 +198,7 @@ public class HelloSearch {
 		panel.add(resultPanel, RESULT);
 	}
 	
+	
 	private void getText()
 	{
 	    try 
@@ -201,13 +206,14 @@ public class HelloSearch {
 			Scanner scanner = new Scanner(new File("t.txt"));
 			String s = new String();
 			while(scanner.hasNextLine())
-			    s += scanner.nextLine() + "\n";
+			    s += "<p>" + scanner.nextLine() + "</p>";
 			scanner.close();
-			resultArea.setText(s);
+			resultPane.setText(s);
 	    } 
 	    catch (FileNotFoundException e) 
 	    {
 	    	e.printStackTrace();
 	    }
 	}
+
 }

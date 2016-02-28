@@ -1,1 +1,5 @@
 /bin/
+*.tar
+*.txt
+*.dat
+/src/update/
