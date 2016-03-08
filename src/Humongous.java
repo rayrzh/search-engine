@@ -118,7 +118,7 @@ public class Humongous {
 			frame.validate();
 			frame.repaint();
 			query.query(q);
-			resultPane.setText(query.getResultString());
+			resultPane.setText(query.getResultDisplayString());
 			statusLabel.setVisible(false);
 			frame.validate();
 			frame.repaint();
@@ -218,9 +218,16 @@ public class Humongous {
 			{
 				try 
 				{
-					PrintWriter pw = new PrintWriter(new File(System.getProperty("user.dir") + File.separator
-									+ searchField.getText() + ".txt"));
-					pw.write(resultPane.getText());
+					File file = new File(System.getProperty("user.dir") + File.separator + "humongous");
+					if(!file.exists())
+						file.mkdir();
+					file = new File(System.getProperty("user.dir") + File.separator
+							+ "humongous" + File.separator + searchField.getText() + ".txt");
+					PrintWriter pw = new PrintWriter(file);
+					pw.write(searchField.getText());
+					pw.println();
+					pw.println();
+					pw.write(query.getResultString());
 					pw.flush();
 					pw.close();
 				} 

@@ -176,7 +176,7 @@ public class Query {
 		return ranking;
 	}
 
-	public String getResultString() {
+	public String getResultDisplayString() {
 		ArrayList<Entry<String, Double>> ranking = getResult();
 		String resultString = "";
 
@@ -191,12 +191,12 @@ public class Query {
 				obj = parser.parse(fr);
 				JSONObject jsonObject = (JSONObject) obj;
 				String title = ((String) jsonObject.get("title"));
-//				String text = ((String) jsonObject.get("text")).substring(0, 20) + "...";
+				String text = ((String) jsonObject.get("text"));
 				String url = (String) jsonObject.get("url");
 				fr.close();
 
 				resultString += "<p>" +title + "</p>";
-//				resultString += "<p>" + text + "</p>";
+				resultString += "<p>" + getText(text) + "</p>";
 				resultString += "<p><a href=\"" + url + "\">" + url + "</a></p>";
 				resultString += "<p>Score: " + result.getValue() + "</p>";
 				resultString += "<p></p>";
@@ -211,6 +211,112 @@ public class Query {
 
 		}
 		return resultString;
+	}
+	
+	public String getResultString()
+	{
+		ArrayList<Entry<String, Double>> ranking = getResult();
+		String resultString = "";
+		
+		for (Entry<String, Double> result : ranking)
+		{
+			String fileName = result.getKey();
+
+			JSONParser parser = new JSONParser();
+			Object obj = null;
+			FileReader fr = null;
+			try
+			{
+				fr = new FileReader(PAGE_PATH + fileName + ".json");
+				obj = parser.parse(fr);
+				JSONObject jsonObject = (JSONObject) obj;
+				String title = ((String) jsonObject.get("title"));
+				String text = ((String) jsonObject.get("text"));
+				String url = (String) jsonObject.get("url");
+				fr.close();
+				
+				resultString += "@TITLE\n";
+				resultString += title + "\n";
+				resultString += "@URL\n";
+				resultString += url + "\n";
+				resultString += "\n";
+
+			}
+			catch (org.json.simple.parser.ParseException e)
+			{
+				e.printStackTrace();
+			}
+			catch (FileNotFoundException e)
+			{
+				e.printStackTrace();
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}
+
+		}
+		
+		return resultString;
+	}
+	
+	private String getText(String text)
+	{
+		String s = "";
+		ArrayList<String> tokens = token(text);
+		int tokensLength = tokens.size();
+		boolean first = true;
+		loop: for(ArrayList<String> list : qTerms)
+		{
+			if(list.isEmpty())
+				continue loop;
+			for(int i = 0; i < list.size(); i++)
+			{
+				String term = list.get(i);
+				if(term == "")
+					continue;
+				int index = tokens.indexOf(term);
+//				System.out.println(index);
+				if(first)
+				{
+					if(index-1 >= 0 && index+1 <= tokensLength-1)
+						s += "..." + tokens.get(index - 1) + " " + term + " " + tokens.get(index + 1) + "...";
+					else if(index-1 == 0 && index+1 <= tokensLength-1)
+						s += "..." + term + " " + tokens.get(index + 1) + "...";
+					else if(index-1 >= 0 && index <= tokensLength-1)
+						s += "..." + tokens.get(index - 1) + " " + term + "...";
+					else
+						s += "..." + term + "...";
+					first = false;
+				}
+				else
+				{
+					if(index-1 > 0 && index+1 <= tokensLength-1)
+						s += tokens.get(index - 1) + " " + term + " " + tokens.get(index + 1) + "...";
+					else if(index-1 == 0 && index+1 <= tokensLength-1)
+						s += term + " " + tokens.get(index + 1) + "...";
+					else if(index-1 >= 0 && index <= tokensLength-1)
+						s += tokens.get(index - 1) + " " + term + "...";
+					else
+						s += term + "...";
+				}
+			}
+		}
+		return s;
+	}
+	
+	private ArrayList<String> token(String text) {
+
+		String toStr = "";
+		ArrayList<String> words = new ArrayList<String>();
+
+		String pattern = " \t\n\r\f.," + "~!@#$%^&*()_+-=`" + "{}|[]\\;':\"" + "<>?/";
+		StringTokenizer st = new StringTokenizer(text, pattern, false);
+		while (st.hasMoreTokens()) {
+			toStr = st.nextToken().trim().toLowerCase();
+			words.add(toStr);
+		}
+		return words;
 	}
 
 //	public static void main(String[] args) {

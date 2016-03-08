@@ -6,3 +6,6 @@
 *.zip
 /src/update/
 /CrawledPages/
+/archive/
+/index/
+/google/

@@ -5,6 +5,7 @@ import java.util.ArrayList;
 
 public class Document implements Serializable{
 	
+	private static final long serialVersionUID = 491923165537575797L;
 	private ArrayList<Integer> position;
 	private double tfIDF;
 	private String docName;
