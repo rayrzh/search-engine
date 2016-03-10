@@ -12,7 +12,7 @@ public class FileSplitter
 {
 	private static final String DIR_PATH = System.getProperty("user.dir") + File.separator;
 	private static final String INDEX_PATH = DIR_PATH + "index" + File.separator;
-	private final String[] indexName = {"0-9", "a-f", "g-l", "m-r", "s-z"};
+	private final String[] indexName = {"0-9", "a-c", "d-f", "g-i", "j-l", "m-o", "p-r", "s-u", "v-x", "y-z"};
 	
 	public FileSplitter()
 	{
@@ -57,27 +57,33 @@ public class FileSplitter
 			fos.close();
 			System.out.println("Closing numbers");
 			
-			fileCount++;
-			fos = new FileOutputStream(new File(INDEX_PATH + indexName[fileCount] + ".dat"));
-			oos = new ObjectOutputStream(fos);
-			while (pair != null && (c >= 'a' && c <= 'f'))
+			char ch = 'a';
+			while(ch <= 'z')
 			{
-				oos.writeObject(pair);
-				count++;
-				if(count%100 == 0)
-					System.out.println(count + "\t" + c);
-				if(count%10000 == 0)
-					System.gc();
-				
-				pair = (Pair) ois.readObject();
-				s = (String) pair.getKey() + "";
-				c = s.charAt(0);
+				fileCount++;
+				fos = new FileOutputStream(new File(INDEX_PATH + indexName[fileCount] + ".dat"));
+				oos = new ObjectOutputStream(fos);
+				while (pair != null && c <= ch+2)
+				{
+					oos.writeObject(pair);
+					count++;
+					if(count%100 == 0)
+						System.out.println(count + "\t" + c);
+					if(count%10000 == 0)
+						System.gc();
+					
+					pair = (Pair) ois.readObject();
+					s = (String) pair.getKey() + "";
+					c = s.charAt(0);
+				}
+				oos.writeObject(null);
+				oos.close();
+				System.out.println("Closing "+ indexName[fileCount]);
+				ch += 3;
+				System.gc();
 			}
-			oos.writeObject(null);
-			oos.close();
-			System.out.println("Closing a-f");
 			
-			
+			/*
 			fileCount++;
 			fos = new FileOutputStream(new File(INDEX_PATH + indexName[fileCount] + ".dat"));
 			oos = new ObjectOutputStream(fos);
@@ -143,7 +149,7 @@ public class FileSplitter
 			oos.writeObject(null);
 			oos.close();
 			System.out.println("Closing s-z");
-			
+			*/
 		}
 		catch (FileNotFoundException e)
 		{
