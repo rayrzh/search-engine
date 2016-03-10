@@ -110,9 +110,9 @@ public class NDCG
 	{
 		HashMap<String, int[]> rankingMap = getRankingMap(idealFile, actualFile);
 		
-		ArrayList<double[]> discountedGain = new ArrayList<double[]>();
 		Iterator iter = rankingMap.entrySet().iterator();
 		int count = 1;
+		double[] DCG = new double[] {0.0, 0.0};
 		while(iter.hasNext() && count < 6)
 		{
 			Entry<String, int[]> entry = (Entry<String, int[]>) iter.next();
@@ -128,17 +128,12 @@ public class NDCG
 				dg[0] = (double)entry.getValue()[0]/(Math.log(count)/Math.log(2.0));
 				dg[1] = (double)entry.getValue()[1]/(Math.log(count)/Math.log(2.0));
 			}
+			DCG[0] += dg[0];
+			DCG[1] += dg[1];
 			count++;
-			System.out.printf("RK [%d, %d]\n", entry.getValue()[0], entry.getValue()[1]);
-			System.out.printf("DG [%f, %f]\n", dg[0], dg[1]);
-			discountedGain.add(dg);
-		}
-		
-		double[] DCG = new double[] {0.0, 0.0};
-		for(int i = 0; i < discountedGain.size(); i++)
-		{
-			DCG[0] += discountedGain.get(i)[0];
-			DCG[1] += discountedGain.get(i)[1];
+			System.out.printf("RK\t[%d, %d]\n", entry.getValue()[0], entry.getValue()[1]);
+//			System.out.printf("DG\t[%f, %f]\n", dg[0], dg[1]);
+			System.out.printf("DCG\t[%f, %f]\n", DCG[0], DCG[1]);
 		}
 		
 		return DCG[1]/DCG[0];
@@ -156,7 +151,7 @@ public class NDCG
 		
 		NDCG ndcg = new NDCG();
 		
-		DocWriter dw = new DocWriter(System.getProperty("user.dir") + File.separator, "NDCG@5", "txt");
+		DocWriter dw = new DocWriter(System.getProperty("user.dir") + File.separator, "NDCG@5-optimized", "txt");
 		
 		for(String query : queries)
 		{
@@ -171,14 +166,12 @@ public class NDCG
 //			}
 			
 			double NDCG = ndcg.calculateNDCG(google + query + ".txt", humongous + query + ".txt");
-			System.out.println(NDCG);
+			System.out.println("NDCG:\t"+NDCG);
+			System.out.println();
 			dw.write(query + ": " + NDCG + "\n");
 		}
 		
 		dw.close();
-		
-		
-		
 	}
 
 }
