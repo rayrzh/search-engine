@@ -15,6 +15,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.PrintWriter;
 import java.net.URISyntaxException;
+import java.util.Date;
 import java.util.Scanner;
 import java.awt.event.ActionEvent;
 
@@ -117,7 +118,10 @@ public class Humongous {
 			statusLabel.setVisible(true);
 			frame.validate();
 			frame.repaint();
+			Date d1 = new Date();
 			query.query(q);
+			Date d2 = new Date();
+			System.out.printf("%.2f s", (float)((d2.getTime()-d1.getTime())/1000));
 			resultPane.setText(query.getResultDisplayString());
 			statusLabel.setVisible(false);
 			frame.validate();
@@ -161,16 +165,6 @@ public class Humongous {
 			public void actionPerformed(ActionEvent e) 
 			{
 				transformToResultView();
-//				String q = searchField.getText();
-//				if(!q.isEmpty())
-//				{
-//					System.out.println(q);
-//					
-//					query.query(q);
-//					resultPane.setText(query.getResultString());
-//					frame.setBounds(100, 100, 900, 600);
-//					((CardLayout) panel.getLayout()).show(panel, RESULT);
-//				}
 			}
 		});
 		searchPanel.add(searchButton);
@@ -284,7 +278,7 @@ public class Humongous {
 		panel.add(resultPanel, RESULT);
 	}
 	
-	
+	/*
 	private void getText()
 	{
 	    try 
@@ -301,4 +295,5 @@ public class Humongous {
 	    	e.printStackTrace();
 	    }
 	}
+	*/
 }
