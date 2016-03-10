@@ -13,6 +13,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Scanner;
 
 import org.json.simple.JSONObject;
 import org.json.simple.parser.JSONParser;
@@ -103,7 +104,7 @@ public class Query {
 						System.out.println(pair.getKey());
 						if (qMap.containsKey((String) pair.getKey())) {
 							docList = (ArrayList<Document>) pair.getValue();
-							for (int t = 0; t < Math.min(5, docList.size()); t++) {
+							for (int t = 0; t < Math.min(20, docList.size()); t++) {
 								System.out.print(docList.get(t).getDocName()+" ");
 								qMap.get((String) pair.getKey()).add(docList.get(t));
 							}
@@ -260,6 +261,7 @@ public class Query {
 		return resultString;
 	}
 	
+/*
 	private String getText(String text)
 	{
 		String s = "";
@@ -304,7 +306,39 @@ public class Query {
 		}
 		return s;
 	}
+*/
 	
+	private String getText(String text)
+	{
+		String s = "";
+		Scanner scanner = new Scanner(text);
+		String line = "";
+		boolean match;
+		while(scanner.hasNextLine())
+		{
+			line = scanner.nextLine();
+			loop: for(ArrayList<String> list : qTerms)
+			{
+				match = false;
+				if(list.isEmpty())
+					continue loop;
+				for(int i = 0; i < list.size(); i++)
+				{
+					if(line.matches("(?i).*"+list.get(i)+".*"))
+					{
+						line = line.replaceAll("(?i)"+list.get(i).trim(), "<strong>"+list.get(i).trim()+"</strong>");
+						if(!match)
+							match = true;
+					}
+				}
+				if(match)
+					s += line + "...";
+			}
+		}
+		return s;
+	}
+	
+	/*
 	private ArrayList<String> token(String text) {
 
 		String toStr = "";
@@ -318,11 +352,14 @@ public class Query {
 		}
 		return words;
 	}
-
-//	public static void main(String[] args) {
-//		Query q = new Query();
-//		String qeury = "these theory time"; // just for test
-//		q.query(qeury);
-//		System.out.println(q.getResultString());
-//	}
+	*/
+	
+	/*
+	public static void main(String[] args) {
+		Query q = new Query();
+		String qeury = "these theory time"; // just for test
+		q.query(qeury);
+		System.out.println(q.getResultString());
+	}
+	 */
 }
