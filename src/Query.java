@@ -25,6 +25,9 @@ public class Query {
 	private static final String DIR_PATH = System.getProperty("user.dir") + File.separator;
 	private static final String PAGE_PATH = DIR_PATH + "CrawledPages" + File.separator;
 	private static final String INDEX_PATH = DIR_PATH + "index" + File.separator;
+	
+	private final String[] INDEX_NAMES = {"0-9", "a-c", "d-f", "g-i", "j-l", "m-o", "p-r", "s-u", "v-x", "y-z"};
+	
 	HashMap<String, ArrayList<Document>> qMap = new HashMap<String, ArrayList<Document>>(); //
 	HashMap<String, Double> dList = new HashMap<String, Double>(); // document
 	HashMap<String, Double> query = new HashMap<String, Double>();
@@ -33,12 +36,15 @@ public class Query {
 
 	public void query(String q) {
 
-		qTerms.add(new ArrayList<String>()); // "0-9"
-		qTerms.add(new ArrayList<String>()); // "a-f"
-		qTerms.add(new ArrayList<String>()); // "g-l"
-		qTerms.add(new ArrayList<String>()); // "m-r"
-		qTerms.add(new ArrayList<String>()); // "s-z"
-
+//		qTerms.add(new ArrayList<String>()); // "0-9"
+//		qTerms.add(new ArrayList<String>()); // "a-f"
+//		qTerms.add(new ArrayList<String>()); // "g-l"
+//		qTerms.add(new ArrayList<String>()); // "m-r"
+//		qTerms.add(new ArrayList<String>()); // "s-z"
+		
+		for(int i = 0; i < INDEX_NAMES.length; i++)
+			qTerms.add(new ArrayList<String>());
+		
 		StringTokenizer st = new StringTokenizer(q, " "); // more detail later
 		while (st.hasMoreTokens()) {
 			String token = st.nextToken();
@@ -46,18 +52,33 @@ public class Query {
 			if (c >= '0' && c <= '9') {
 				if (!qTerms.get(0).contains(token))
 					qTerms.get(0).add(token);
-			} else if (c >= 'a' && c <= 'f') {
+			} else if (c >= 'a' && c <= 'c') {
 				if (!qTerms.get(1).contains(token))
 					qTerms.get(1).add(token);
-			} else if (c >= 'g' && c <= 'l') {
+			} else if (c >= 'd' && c <= 'f') {
 				if (!qTerms.get(2).contains(token))
 					qTerms.get(2).add(token);
-			} else if (c >= 'm' && c <= 'r') {
+			} else if (c >= 'g' && c <= 'i') {
 				if (!qTerms.get(3).contains(token))
 					qTerms.get(3).add(token);
-			} else if (c >= 's' && c <= 'z') {
+			} else if (c >= 'j' && c <= 'l') {
 				if (!qTerms.get(4).contains(token))
 					qTerms.get(4).add(token);
+			} else if (c >= 'm' && c <= 'o') {
+				if (!qTerms.get(5).contains(token))
+					qTerms.get(5).add(token);
+			} else if (c >= 'p' && c <= 'r') {
+				if (!qTerms.get(6).contains(token))
+					qTerms.get(6).add(token);
+			} else if (c >= 's' && c <= 'u') {
+				if (!qTerms.get(7).contains(token))
+					qTerms.get(7).add(token);
+			} else if (c >= 'v' && c <= 'x') {
+				if (!qTerms.get(8).contains(token))
+					qTerms.get(8).add(token);
+			} else if (c >= 'y' && c <= 'x') {
+				if (!qTerms.get(9).contains(token))
+					qTerms.get(9).add(token);
 			}
 
 			if (!qMap.containsKey(token)) {
@@ -87,11 +108,10 @@ public class Query {
 
 	private void kDocument() throws ClassNotFoundException, IOException {
 		// save index and statistics to file
-		String[] query = { "0-9", "a-f", "g-l", "m-r", "s-z" };
 		for (int i = 0; i < qTerms.size(); i++) {
 			if (qTerms.get(i).isEmpty())
 				continue;
-			File file = new File(INDEX_PATH + query[i] + ".dat");
+			File file = new File(INDEX_PATH + INDEX_NAMES[i] + ".dat");
 			FileInputStream fis = new FileInputStream(file);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 
@@ -104,11 +124,12 @@ public class Query {
 						System.out.println(pair.getKey());
 						if (qMap.containsKey((String) pair.getKey())) {
 							docList = (ArrayList<Document>) pair.getValue();
-							for (int t = 0; t < Math.min(20, docList.size()); t++) {
-								System.out.print(docList.get(t).getDocName()+" ");
-								qMap.get((String) pair.getKey()).add(docList.get(t));
-							}
-							System.out.println("found");
+//							for (int t = 0; t < Math.min(20, docList.size()); t++) {
+//								System.out.print(docList.get(t).getDocName()+" ");
+//								qMap.get((String) pair.getKey()).add(docList.get(t));
+//							}
+							qMap.get((String) pair.getKey()).addAll(docList);
+							System.out.println(docList.size()+" found");
 						}
 					}
 				}
@@ -232,7 +253,7 @@ public class Query {
 				obj = parser.parse(fr);
 				JSONObject jsonObject = (JSONObject) obj;
 				String title = ((String) jsonObject.get("title"));
-				String text = ((String) jsonObject.get("text"));
+//				String text = ((String) jsonObject.get("text"));
 				String url = (String) jsonObject.get("url");
 				fr.close();
 				

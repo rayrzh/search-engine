@@ -73,8 +73,11 @@ public class FileSplitter
 						System.gc();
 					
 					pair = (Pair) ois.readObject();
-					s = (String) pair.getKey() + "";
-					c = s.charAt(0);
+					if(pair != null)
+					{	
+						s = (String) pair.getKey() + "";
+						c = s.charAt(0);
+					}
 				}
 				oos.writeObject(null);
 				oos.close();

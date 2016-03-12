@@ -121,7 +121,7 @@ public class Humongous {
 			Date d1 = new Date();
 			query.query(q);
 			Date d2 = new Date();
-			System.out.printf("%.2f s", (float)((d2.getTime()-d1.getTime())/1000));
+			System.out.printf("%.2f s\n", (float)((d2.getTime()-d1.getTime())/1000));
 			resultPane.setText(query.getResultDisplayString());
 			statusLabel.setVisible(false);
 			frame.validate();

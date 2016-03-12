@@ -166,7 +166,7 @@ public class NDCG
 //			}
 			
 			double NDCG = ndcg.calculateNDCG(google + query + ".txt", humongous + query + ".txt");
-			System.out.println("NDCG:\t"+NDCG);
+			System.out.println(query+" NDCG:\t"+NDCG);
 			System.out.println();
 			dw.write(query + ": " + NDCG + "\n");
 		}
