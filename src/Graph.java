@@ -12,6 +12,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
+import java.util.Map.Entry;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -113,42 +114,46 @@ public class Graph {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-//		 System.out.println("****************************");
-//		 File file1 = new File("link.dat");
-//		
-//		 try {
-//		 PrintWriter pw = new PrintWriter("link.txt");
-//		 FileInputStream fis = new FileInputStream(file1);
-//		 ObjectInputStream ois = new ObjectInputStream(fis);
-//		
-//		 while (true) {
-//		 Node node = (Node) ois.readObject();
-//		 if (node == null)
-//		 break;
-//		 pw.println("DOCID: "+(Integer) node.getDocId());
-//		 pw.println("InLink: ");
-//		 for(Integer n: node.getInLinks()){
-//		 pw.print(n+" ");
-//		 }
-//		 pw.println();
-//		 pw.println("OutLink: ");
-//		 for(Integer n: node.getOutLinks()){
-//		 pw.print(n+" ");
-//		 }
-//		 pw.println();
-//		 }
-//		 pw.flush();
-//		 pw.close();
-//		 ois.close();
-//		 fis.close();
-//		
-//		 } catch (FileNotFoundException e) {
-//		 e.printStackTrace();
-//		 } catch (IOException e) {
-//		 e.printStackTrace();
-//		 } catch (ClassNotFoundException e) {
-//		 e.printStackTrace();
-//		 }
+//		System.out.println("****************************");
+//		File file1 = new File("link.dat");
+//
+//		try
+//		{
+//			PrintWriter pw = new PrintWriter("link.txt");
+//			FileInputStream fis = new FileInputStream(file1);
+//			ObjectInputStream ois = new ObjectInputStream(fis);
+//
+//			HashMap<Integer, Node> nodes = (HashMap<Integer, Node>) ois.readObject();
+//			Iterator<Entry<Integer, Node>> iter = nodes.entrySet().iterator();
+//			while (iter.hasNext())
+//			{
+//				Entry<Integer, Node> entry = (Entry<Integer, Node>) iter.next();
+//				pw.println("DOCID: " + (Integer) entry.getKey());
+//				pw.println("InLink: ");
+//				pw.println(entry.getValue().getInLinks().toString());
+//				pw.println("OutLink: ");
+//				pw.println(entry.getValue().getOutLinks().toString());
+//				pw.println();
+//			}
+//
+//			pw.flush();
+//			pw.close();
+//			ois.close();
+//			fis.close();
+//
+//		}
+//		catch (FileNotFoundException e)
+//		{
+//			e.printStackTrace();
+//		}
+//		catch (IOException e)
+//		{
+//			e.printStackTrace();
+//		}
+//		catch (ClassNotFoundException e)
+//		{
+//			e.printStackTrace();
+//		}
 		
 	}
 

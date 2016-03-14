@@ -278,22 +278,4 @@ public class Humongous {
 		panel.add(resultPanel, RESULT);
 	}
 	
-	/*
-	private void getText()
-	{
-	    try 
-	    {
-			Scanner scanner = new Scanner(new File("t.txt"));
-			String s = new String();
-			while(scanner.hasNextLine())
-			    s += "<p>" + scanner.nextLine() + "</p>";
-			scanner.close();
-			resultPane.setText(s);
-	    } 
-	    catch (FileNotFoundException e) 
-	    {
-	    	e.printStackTrace();
-	    }
-	}
-	*/
 }
