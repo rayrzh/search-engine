@@ -1,3 +1,4 @@
+package Indexer;
 
 import java.io.Serializable;
 import java.util.ArrayList;
@@ -8,19 +9,22 @@ public class Document implements Serializable{
 	private ArrayList<Integer> position;
 	private double tfIDF;
 	private String docName;
+	private int length;
 	
-	public Document(String docName)
+	public Document(String docName,int length)
 	{
 		position = new ArrayList<Integer>();
 		tfIDF = 0;
 		this.docName = docName;
+		this.length = length;
 	}
 	
-	public Document(String docName, ArrayList<Integer> pos)
+	public Document(String docName, ArrayList<Integer> pos, int length)
 	{
 		position = new ArrayList<Integer>(pos);
 		tfIDF = 0;
 		this.docName = docName;
+		this.length = length;
 	}
 
 	public void addPosition(int pos) 
@@ -41,7 +45,7 @@ public class Document implements Serializable{
 	
 	public void calculateTFIDF(int docFreq, int totalDocCount)
 	{
-		tfIDF = Math.log(1+position.size())*Math.log10(totalDocCount/docFreq);
+		tfIDF = Math.log(1+position.size())*Math.log10(totalDocCount/docFreq)/length;
 		return;
 	}
 	
