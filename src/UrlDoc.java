@@ -1,4 +1,3 @@
-package duedue;
 
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -22,33 +21,33 @@ public class UrlDoc {
 		FileOutputStream fos = new FileOutputStream(new File("url-doc.dat"));
 		ObjectOutputStream oos = new ObjectOutputStream(fos);
 		
-			for (String fileName : fileNames) {
-				try {
-				Object obj = parser.parse(new FileReader(pagePath + fileName));
-				JSONObject jsonObject = (JSONObject) obj;
+		for (String fileName : fileNames) {
+			try {
+			Object obj = parser.parse(new FileReader(pagePath + fileName));
+			JSONObject jsonObject = (JSONObject) obj;
 
-				String url = (String) jsonObject.get("url");
-				// System.out.println("url: " + url);
+			String url = (String) jsonObject.get("url");
+			// System.out.println("url: " + url);
 
-				int docID = (Integer.valueOf(fileName.split("\\.")[0]));
+			int docID = (Integer.valueOf(fileName.split("\\.")[0]));
 
-				int hashValue = BKDRHash(url);
-				Page page = new Page(hashValue, docID);
+			int hashValue = BKDRHash(url);
+			Page page = new Page(hashValue, docID);
 
-				oos.writeObject(page);
-				count++;
-				if(count%1000==0) System.out.println(count);
-				if(count>10690&&count<10700) System.out.println(count);
-				} catch (org.json.simple.parser.ParseException e) {
-					e.printStackTrace();
-				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			oos.writeObject(page);
+			count++;
+			if(count%1000==0) System.out.println(count);
+			if(count>10690&&count<10700) System.out.println(count);
+			} catch (org.json.simple.parser.ParseException e) {
+				e.printStackTrace();
+			} catch (FileNotFoundException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
-			oos.writeObject(null);
-			oos.close();
+		}
+		oos.writeObject(null);
+		oos.close();
 	}
 
 	public static int BKDRHash(String str) {

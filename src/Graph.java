@@ -1,4 +1,3 @@
-package duedue;
 
 import java.io.File;
 import java.io.FileInputStream;
@@ -60,13 +59,15 @@ public class Graph {
 		// extract outlink for each json file
 		for (String fileName : fileNames) {
 			try {
-				Object obj = parser.parse(new FileReader(pagePath + fileName));
+				FileReader fr = new FileReader(pagePath + fileName);
+				Object obj = parser.parse(fr);
 				JSONObject jsonObject = (JSONObject) obj;
 
 				int docID = (Integer.valueOf(fileName.split("\\.")[0]));
 				Node node = new Node(docID); // create node for each json file;
 
 				JSONArray ourgoingLinks = (JSONArray) jsonObject.get("links");
+				fr.close();
 				Iterator<String> iterator = ourgoingLinks.iterator();
 				while (iterator.hasNext()) {
 					String url = iterator.next();
@@ -99,7 +100,7 @@ public class Graph {
 				}
 				// System.out.println("");
 				graphNodes.put(docID, node);
-
+				
 				count++;
 				if (count % 1000 == 0)
 					System.out.println(count);
@@ -115,12 +116,13 @@ public class Graph {
 			FileOutputStream fos = new FileOutputStream(new File("link.dat"));
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 
-			Iterator iter = graphNodes.entrySet().iterator();
-			while (iter.hasNext()) {
-				Map.Entry entry = (Map.Entry) iter.next();
-				// System.out.println((Integer) key + ":");
-				oos.writeObject((Node) entry.getValue());
-			}
+//			Iterator iter = graphNodes.entrySet().iterator();
+//			while (iter.hasNext()) {
+//				Map.Entry entry = (Map.Entry) iter.next();
+//				// System.out.println((Integer) key + ":");
+//				oos.writeObject((Node) entry.getValue());
+//			}
+			oos.writeObject(graphNodes);
 			oos.writeObject(null);
 			oos.close();
 			fos.close();

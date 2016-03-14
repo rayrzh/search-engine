@@ -5,23 +5,23 @@ public class Page implements Serializable
 {
 	
 	private static final long serialVersionUID = 2990888688889159498L;
-	private String docName;
-	private String url;
+	private int docName;
+	private int urlValue;
 	
-	public Page(String docName, String url)
+	public Page(int hashValue, int docID)
 	{
-		this.docName = docName;
-		this.url = url;
+		this.docName = docID;
+		this.urlValue = hashValue;
 	}
 	
-	public String getDocName()
+	public int getDocName()
 	{
 		return docName;
 	}
 	
-	public String getUrl()
+	public int getUrlValue()
 	{
-		return url;
+		return urlValue;
 	}
 
 }
