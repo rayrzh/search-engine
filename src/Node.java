@@ -9,6 +9,7 @@ public class Node implements Serializable
 	private int docID;
 	private ArrayList<Integer> outLink;
 	private ArrayList<Integer> inLink;
+	private double pageRanking;
 
 	public Node(int dicID)
 	{
@@ -16,6 +17,7 @@ public class Node implements Serializable
 		this.docID = dicID;
 		outLink = new ArrayList<Integer>();
 		inLink = new ArrayList<Integer>();
+		pageRanking = 1.0;
 	}
 
 	public void addInLink(int docID)
@@ -26,6 +28,16 @@ public class Node implements Serializable
 	public void addOutLink(int docID)
 	{
 		outLink.add(docID);
+	}
+	
+	public void setPageRanking(double pageRanking)
+	{
+		this.pageRanking = pageRanking;
+	}
+	
+	public double getPageRanking()
+	{
+		return pageRanking;
 	}
 
 	public ArrayList<Integer> getInLinks()

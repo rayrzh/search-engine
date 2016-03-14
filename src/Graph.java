@@ -171,7 +171,7 @@ public class Graph {
 		Graph g = new Graph();
 		g.loadUrlDoc();
 		g.buildGraph();
-		System.out.println("end");
+		System.out.println("Finished");
 
 	}
 }
