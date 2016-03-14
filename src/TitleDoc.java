@@ -1,19 +1,25 @@
-package duedue;
+package util;
+
 
 import java.io.Serializable;
 import java.util.ArrayList;
 
 public class TitleDoc implements Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -697978734163307657L;
 	private int fre;
 	private double tfIDF;
 	private int docID;
 	private int length;
 	
-	public TitleDoc(int docID)
+	public TitleDoc(int docID, int length)
 	{
-		fre=0;
+		fre=1;
 		tfIDF = 0;
 		this.docID = docID;
+		this.length = length;
 	}
 	public int getId(){
 		return docID;
@@ -36,9 +42,10 @@ public class TitleDoc implements Serializable{
 	
 	public void calculateTFIDF(int docFreq)
 	{
-		tfIDF = Math.log(1+fre)*Math.log10(63993/docFreq);
+		tfIDF = Math.log(1+fre)*Math.log10(63993/docFreq)/length;
 		return;
 	}
+	
 	
 	
 	

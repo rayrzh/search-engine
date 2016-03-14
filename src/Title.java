@@ -1,4 +1,4 @@
-package duedue;
+package util;
 
 import java.io.BufferedReader;
 import java.io.File;
@@ -57,22 +57,27 @@ public class Title {
 				ArrayList<String> titleList = new ArrayList<String>();
 				String pattern = " \t\n\r\f.," + "~!@#$%^&*()_+-=`" + "{}|[]\\;':\"" + "<>?/";
 				StringTokenizer st = new StringTokenizer(title, pattern, false);
+				int length = st.countTokens();
 				String term = "";
-
 				int docID = (Integer.valueOf(fileName.split("\\.")[0]));
 				while (st.hasMoreTokens()) {
+					length++;
 					term = st.nextToken().trim();
 					if (!stops.contains(term.toLowerCase())) {
 						if (titleMap.containsKey(term)) {
-							titleMap.get(term).add(new TitleDoc(docID));
+							if (titleMap.get(term).contains(docID)) {
+								int index = titleMap.get(term).indexOf(docID);
+								titleMap.get(term).get(index).add();
+							} else {
+								titleMap.get(term).add(new TitleDoc(docID,length));
+							}
 						} else {
 							titleMap.put(term, new ArrayList<TitleDoc>());
-							titleMap.get(term).add(new TitleDoc(docID));
+							titleMap.get(term).add(new TitleDoc(docID,length));
 						}
 					}
 				}
 				// System.out.println("url: " + url);
-
 				count++;
 
 				if (count % 1000 == 0)
@@ -88,14 +93,17 @@ public class Title {
 				e.printStackTrace();
 			}
 		}
+		
 		Iterator iter = titleMap.entrySet().iterator();
-		while(iter.hasNext()){
+		while (iter.hasNext()) {
 			Entry<String, ArrayList<TitleDoc>> term = (Entry<String, ArrayList<TitleDoc>>) iter.next();
-			for(TitleDoc t: term.getValue()){
+			for (TitleDoc t : term.getValue()) {
+				int s = term.getValue().size();
+//				System.out.println(t.getLength());
 				t.calculateTFIDF(term.getValue().size());
 			}
 		}
-		
+
 		oos.writeObject(titleMap);
 		oos.writeObject(null);
 		oos.close();
@@ -166,11 +174,11 @@ public class Title {
 				int docID = doclist.get(i).getId();
 
 				if (!dList.containsKey(docID)) {
-					score = doclist.get(i).getTFIDF()*query.get(key);
+					score = doclist.get(i).getTFIDF() * query.get(key);
 					dList.put(docID, score);
 				} else {
 					score = dList.get(docID);
-					score += doclist.get(i).getTFIDF()*query.get(key);
+					score += doclist.get(i).getTFIDF() * query.get(key);
 					dList.put(docID, score);
 				}
 			}
@@ -243,24 +251,24 @@ public class Title {
 
 	public static void main(String[] args) {
 		Title t = new Title();
-		t.loadStops();
-		try {
-			t.titleRank();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		
+//		t.loadStops();
 //		try {
-//			t.kDocument("Donald Bren School");
-//		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
+//			t.titleRank();
 //		} catch (IOException e) {
 //			e.printStackTrace();
 //		}
-//		ArrayList<Entry<Integer, Double>> a = t.getResultTitle();
-//		for (Entry<Integer, Double> b : a) {
-//			System.out.println(b.toString());
-//		}
+
+		 try {
+		 t.kDocument("machine learning");
+		 } catch (ClassNotFoundException e) {
+		 e.printStackTrace();
+		 } catch (IOException e) {
+		 e.printStackTrace();
+		 }
+		 ArrayList<Entry<Integer, Double>> a = t.getResultTitle();
+		 for (Entry<Integer, Double> b : a) {
+		 System.out.println(b.toString());
+		 }
 
 	}
 }
