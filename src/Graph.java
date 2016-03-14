@@ -28,14 +28,7 @@ public class Graph {
 			FileInputStream fis = new FileInputStream(file);
 			ObjectInputStream ois = new ObjectInputStream(fis);
 
-			while (true) {
-				Page pair = (Page) ois.readObject();
-				if (pair == null)
-					break;
-				int urlValue = (Integer) pair.getUrlValue();
-				int docID = (Integer) pair.getDocName();
-				urlDoc.put(urlValue, docID);
-			}
+			urlDoc = (HashMap<Integer, Integer>) ois.readObject();
 
 			ois.close();
 			fis.close();
@@ -58,117 +51,105 @@ public class Graph {
 
 		// extract outlink for each json file
 		for (String fileName : fileNames) {
-			try {
-				FileReader fr = new FileReader(pagePath + fileName);
-				Object obj = parser.parse(fr);
-				JSONObject jsonObject = (JSONObject) obj;
+			if (fileName.matches("^\\w+?(\\.json)$")) {
+				try {
+					FileReader reader = new FileReader(pagePath + fileName);
+					Object obj = parser.parse(reader);
+					JSONObject jsonObject = (JSONObject) obj;
 
-				int docID = (Integer.valueOf(fileName.split("\\.")[0]));
-				Node node = new Node(docID); // create node for each json file;
+					int docID = (Integer.valueOf(fileName.split("\\.")[0]));
+					Node node = new Node(docID); 
 
-				JSONArray ourgoingLinks = (JSONArray) jsonObject.get("links");
-				fr.close();
-				Iterator<String> iterator = ourgoingLinks.iterator();
-				while (iterator.hasNext()) {
-					String url = iterator.next();
+					JSONArray ourgoingLinks = (JSONArray) jsonObject.get("links");
+					Iterator<String> iterator = ourgoingLinks.iterator();
+					while (iterator.hasNext()) {
+						String url = iterator.next();
 
-					int hashValue = BKDRHash(url);
-					if (urlDoc.containsKey(hashValue)) { // if outgoing link
-															// belongs to
-															// uci.edu.ics
-
-						Node outNode = null;
-						int outDocID = urlDoc.get(hashValue); // find docID for
-																// given url
-						// System.out.print(outDocID+" ");
-						if (outDocID == docID)
-							continue;
-						if (graphNodes.containsKey(outDocID)) { // if nodes
-																// exist in
-																// graph
-							outNode = graphNodes.get(outDocID); // add inlink to
-																// node
-							outNode.addInLink(node);
-						} else {
-							outNode = new Node(outDocID); // if not exist, then
-															// create a new node
-							outNode.addInLink(node);
+						int hashValue = BKDRHash(url);
+						if (urlDoc.containsKey(hashValue)) { //outlink in domain
+							Node outNode = null;
+							int outDocID = urlDoc.get(hashValue); // find docID
+							if (outDocID == docID)
+								continue;
+							if (graphNodes.containsKey(outDocID)) { 
+								outNode = graphNodes.get(outDocID); 
+								outNode.addInLink(node.getDocId());
+							} else {
+								outNode = new Node(outDocID); 
+								outNode.addInLink(node.getDocId());
+							}
+							graphNodes.put(outDocID, outNode); 
+							node.addOutLink(outNode.getDocId()); 
 						}
-						graphNodes.put(outDocID, outNode); // add new or replace
-						node.addOutLink(outNode); // add outlink to current node
 					}
+					// System.out.println("");
+					graphNodes.put(docID, node);
+					reader.close();
+					count++;
+					if (count % 1000 == 0)
+						System.out.println(count);
+				} catch (org.json.simple.parser.ParseException e) {
+					e.printStackTrace();
+				} catch (FileNotFoundException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
 				}
-				// System.out.println("");
-				graphNodes.put(docID, node);
-				
-				count++;
-				if (count % 1000 == 0)
-					System.out.println(count);
-			} catch (org.json.simple.parser.ParseException e) {
-				e.printStackTrace();
-			} catch (FileNotFoundException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
 			}
 		}
+		
+		System.out.println("Pause");
 		try {
 			FileOutputStream fos = new FileOutputStream(new File("link.dat"));
 			ObjectOutputStream oos = new ObjectOutputStream(fos);
 
-//			Iterator iter = graphNodes.entrySet().iterator();
-//			while (iter.hasNext()) {
-//				Map.Entry entry = (Map.Entry) iter.next();
-//				// System.out.println((Integer) key + ":");
-//				oos.writeObject((Node) entry.getValue());
-//			}
 			oos.writeObject(graphNodes);
 			oos.writeObject(null);
 			oos.close();
 			fos.close();
-			
+
 		} catch (FileNotFoundException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-//		System.out.println("****************************");
-//		File file1 = new File("link.dat");
+//		 System.out.println("****************************");
+//		 File file1 = new File("link.dat");
 //		
-//		try {
-//			PrintWriter pw = new PrintWriter("link.txt");
-//			FileInputStream fis = new FileInputStream(file1);
-//			ObjectInputStream ois = new ObjectInputStream(fis);
-//
-//			while (true) {
-//				Node node = (Node) ois.readObject();
-//				if (node == null)
-//					break;
-//				pw.println("DOCID: "+(Integer) node.docID);
-//				pw.println("InLink: ");
-//				for(Node n: node.inLink){
-//					pw.print(n.docID+" ");
-//				}
-//				pw.println();
-//				pw.println("OutLink: ");
-//				for(Node n: node.outLink){
-//					pw.print(n.docID+" ");
-//				}
-//				pw.println();
-//			}
-//			pw.flush();
-//			pw.close();
-//			ois.close();
-//			fis.close();
-//
-//		} catch (FileNotFoundException e) {
-//			e.printStackTrace();
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		} catch (ClassNotFoundException e) {
-//			e.printStackTrace();
-//		}
+//		 try {
+//		 PrintWriter pw = new PrintWriter("link.txt");
+//		 FileInputStream fis = new FileInputStream(file1);
+//		 ObjectInputStream ois = new ObjectInputStream(fis);
 //		
+//		 while (true) {
+//		 Node node = (Node) ois.readObject();
+//		 if (node == null)
+//		 break;
+//		 pw.println("DOCID: "+(Integer) node.getDocId());
+//		 pw.println("InLink: ");
+//		 for(Integer n: node.getInLinks()){
+//		 pw.print(n+" ");
+//		 }
+//		 pw.println();
+//		 pw.println("OutLink: ");
+//		 for(Integer n: node.getOutLinks()){
+//		 pw.print(n+" ");
+//		 }
+//		 pw.println();
+//		 }
+//		 pw.flush();
+//		 pw.close();
+//		 ois.close();
+//		 fis.close();
+//		
+//		 } catch (FileNotFoundException e) {
+//		 e.printStackTrace();
+//		 } catch (IOException e) {
+//		 e.printStackTrace();
+//		 } catch (ClassNotFoundException e) {
+//		 e.printStackTrace();
+//		 }
+		
 	}
 
 	public static int BKDRHash(String str) {
