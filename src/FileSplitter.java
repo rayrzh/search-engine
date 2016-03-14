@@ -1,5 +1,4 @@
 
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -86,73 +85,6 @@ public class FileSplitter
 				System.gc();
 			}
 			
-			/*
-			fileCount++;
-			fos = new FileOutputStream(new File(INDEX_PATH + indexName[fileCount] + ".dat"));
-			oos = new ObjectOutputStream(fos);
-			while (pair != null && (c >= 'g' && c <= 'l'))
-			{
-				oos.writeObject(pair);
-				count++;
-				
-				if(count%100 == 0)
-					System.out.println(count + "\t" + c);
-				if(count%10000 == 0)
-					System.gc();
-
-				pair = (Pair) ois.readObject();
-				s = (String) pair.getKey() + "";
-				c = s.charAt(0);
-			}
-			oos.writeObject(null);
-			oos.close();
-			System.out.println("Closing g-l");
-			
-			fileCount++;
-			fos = new FileOutputStream(new File(INDEX_PATH + indexName[fileCount] + ".dat"));
-			oos = new ObjectOutputStream(fos);
-			while (pair != null && (c >= 'm' && c <= 'r'))
-			{
-				oos.writeObject(pair);
-				count++;
-				
-				if(count%100 == 0)
-					System.out.println(count + "\t" + c);
-				if(count%10000 == 0)
-					System.gc();
-				
-				pair = (Pair) ois.readObject();
-				s = (String) pair.getKey() + "";
-				c = s.charAt(0);
-			}
-			oos.writeObject(null);
-			oos.close();
-			System.out.println("Closing m-r");
-			
-			fileCount++;
-			fos = new FileOutputStream(new File(INDEX_PATH + indexName[fileCount] + ".dat"));
-			oos = new ObjectOutputStream(fos);
-			while (pair != null && (c >= 's' && c <= 'z'))
-			{
-				oos.writeObject(pair);
-				count++;
-				
-				if(count%100 == 0)
-					System.out.println(count + "\t" + c);
-				if(count%10000 == 0)
-					System.gc();
-				
-				pair = (Pair) ois.readObject();
-				if(pair != null)
-				{
-					s = (String) pair.getKey() + "";
-					c = s.charAt(0);
-				}
-			}
-			oos.writeObject(null);
-			oos.close();
-			System.out.println("Closing s-z");
-			*/
 		}
 		catch (FileNotFoundException e)
 		{
