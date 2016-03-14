@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
 import java.io.ObjectInputStream;
+import java.io.PrintWriter;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -41,7 +42,7 @@ public class Query {
 //		qTerms.add(new ArrayList<String>()); // "g-l"
 //		qTerms.add(new ArrayList<String>()); // "m-r"
 //		qTerms.add(new ArrayList<String>()); // "s-z"
-		
+		qTerms = new ArrayList<ArrayList<String>>();
 		for(int i = 0; i < INDEX_NAMES.length; i++)
 			qTerms.add(new ArrayList<String>());
 		
@@ -152,12 +153,41 @@ public class Query {
 //			}
 //		}
 	}
+	
+	private HashMap<Integer, Node> loadRanking()
+	{
+		FileInputStream fis;
+		HashMap<Integer, Node> nodes = null;
+		try
+		{
+			fis = new FileInputStream(new File("link.dat"));
+			ObjectInputStream ois = new ObjectInputStream(fis);
+			nodes = (HashMap<Integer, Node>) ois.readObject();
+			ois.close();
+			fis.close();
+		}
+		catch (FileNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (ClassNotFoundException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		catch (IOException e)
+		{
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		return nodes;
+	}
 
 	private ArrayList<Entry<String, Double>> getResult() {
 
 		int size = qMap.size();
 		double score = 0.0;
-
 		Iterator iter = qMap.entrySet().iterator();
 		while (iter.hasNext()) {
 			Map.Entry entry = (Map.Entry) iter.next();
@@ -175,6 +205,19 @@ public class Query {
 					dList.put(name, score);
 				}
 			}
+			
+		}
+		
+		HashMap<Integer, Node> pageRank = loadRanking();
+		iter = dList.entrySet().iterator();
+		while (iter.hasNext()) {
+			Map.Entry entry = (Map.Entry) iter.next();
+			String key = (String) entry.getKey();
+			double ranking = 0;
+			score = dList.get(key);
+			if(pageRank.containsKey(Integer.valueOf(key)))
+				ranking = pageRank.get(Integer.valueOf(key)).getPageRanking();
+			dList.put(key, score*ranking);
 		}
 
 		ArrayList<Map.Entry<String, Double>> t = new ArrayList<Map.Entry<String, Double>>(dList.entrySet());
@@ -375,12 +418,35 @@ public class Query {
 	}
 	*/
 	
-	/*
 	public static void main(String[] args) {
+		
+		String[] queries = {"crista lopes", "graduate courses", "machine learning", "mondego", "rest",
+							"security", "software engineering", "student affairs", "computer games", "information retrieval"};
+		
 		Query q = new Query();
-		String qeury = "these theory time"; // just for test
-		q.query(qeury);
-		System.out.println(q.getResultString());
+		for(String query : queries)
+		{
+			q.query(query);
+			System.out.println(q.getResultString());
+			try 
+			{
+				File file = new File(System.getProperty("user.dir") + File.separator + "humongous-update");
+				if(!file.exists())
+					file.mkdir();
+				file = new File(System.getProperty("user.dir") + File.separator
+						+ "humongous-update" + File.separator + query + ".txt");
+				PrintWriter pw = new PrintWriter(file);
+				pw.write(query);
+				pw.println();
+				pw.println();
+				pw.write(q.getResultString());
+				pw.flush();
+				pw.close();
+			} 
+			catch (FileNotFoundException e1) 
+			{
+				e1.printStackTrace();
+			}
+		}
 	}
-	 */
 }

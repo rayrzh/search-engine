@@ -9,6 +9,5 @@
 			<attribute name="javadoc_location" value="jar:platform:/resource/Project3/lib/jsoup-1.8.3-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry kind="lib" path="lib/jung-algorithms-2.0.1.jar" sourcepath="/Users/Ray/Downloads/jung-api-2.0.1.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

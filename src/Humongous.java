@@ -212,11 +212,11 @@ public class Humongous {
 			{
 				try 
 				{
-					File file = new File(System.getProperty("user.dir") + File.separator + "humongous");
+					File file = new File(System.getProperty("user.dir") + File.separator + "humongous-update");
 					if(!file.exists())
 						file.mkdir();
 					file = new File(System.getProperty("user.dir") + File.separator
-							+ "humongous" + File.separator + searchField.getText() + ".txt");
+							+ "humongous-update" + File.separator + searchField.getText() + ".txt");
 					PrintWriter pw = new PrintWriter(file);
 					pw.write(searchField.getText());
 					pw.println();

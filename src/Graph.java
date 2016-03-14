@@ -1,4 +1,3 @@
-
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -12,7 +11,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.Map;
-import java.util.Map.Entry;
 
 import org.json.simple.JSONArray;
 import org.json.simple.JSONObject;
@@ -21,6 +19,12 @@ import org.json.simple.parser.JSONParser;
 public class Graph {
 	HashMap<Integer, Integer> urlDoc = new HashMap<Integer, Integer>();
 	HashMap<Integer, Node> graphNodes = new HashMap<Integer, Node>();
+	
+	private Map<Integer, Double> pagerank_current = new HashMap<Integer, Double>();
+	private Map<Integer, Double> pagerank_new = new HashMap<Integer, Double>();
+	double dumping_factor = 0.85;
+	int iterations = 100;
+
 
 	public void loadUrlDoc() {
 		File file = new File("url-doc.dat");
@@ -99,6 +103,34 @@ public class Graph {
 			}
 		}
 		
+		compute();
+
+//		try
+//		{
+//			PrintWriter pw = new PrintWriter("Rankings.txt");
+//
+//			for(Node nodes: graphNodes.values()){
+//				pw.println("DOCID: " + nodes.getDocId());
+//				pw.println("InLink: ");
+//				pw.println(nodes.getInLinks().toString());
+//				pw.println("OutLink: ");
+//				pw.println(nodes.getOutLinks().toString());
+//				pw.println("PR-Value: "+ nodes.getPageRanking());
+//				pw.println();
+//			}
+//
+//			pw.flush();
+//			pw.close();
+//		}
+//		catch (FileNotFoundException e)
+//		{
+//			e.printStackTrace();
+//		}
+//		catch (IOException e)
+//		{
+//			e.printStackTrace();
+//		}
+		
 		System.out.println("Pause");
 		try {
 			FileOutputStream fos = new FileOutputStream(new File("link.dat"));
@@ -114,47 +146,57 @@ public class Graph {
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-//		System.out.println("****************************");
-//		File file1 = new File("link.dat");
-//
-//		try
-//		{
-//			PrintWriter pw = new PrintWriter("link.txt");
-//			FileInputStream fis = new FileInputStream(file1);
-//			ObjectInputStream ois = new ObjectInputStream(fis);
-//
-//			HashMap<Integer, Node> nodes = (HashMap<Integer, Node>) ois.readObject();
-//			Iterator<Entry<Integer, Node>> iter = nodes.entrySet().iterator();
-//			while (iter.hasNext())
-//			{
-//				Entry<Integer, Node> entry = (Entry<Integer, Node>) iter.next();
-//				pw.println("DOCID: " + (Integer) entry.getKey());
-//				pw.println("InLink: ");
-//				pw.println(entry.getValue().getInLinks().toString());
-//				pw.println("OutLink: ");
-//				pw.println(entry.getValue().getOutLinks().toString());
-//				pw.println();
-//			}
-//
-//			pw.flush();
-//			pw.close();
-//			ois.close();
-//			fis.close();
-//
-//		}
-//		catch (FileNotFoundException e)
-//		{
-//			e.printStackTrace();
-//		}
-//		catch (IOException e)
-//		{
-//			e.printStackTrace();
-//		}
-//		catch (ClassNotFoundException e)
-//		{
-//			e.printStackTrace();
-//		}
+	}
+
+	public void compute() {
+
+		double teleport = (1.0d - dumping_factor) / graphNodes.size();
 		
+		for (Node node : graphNodes.values()) {
+			pagerank_current.put(node.getDocId(), 1.0);
+		}
+
+		for (int i = 0; i < iterations; i++) {
+			System.out.println(i);
+			double dangling_nodes = 0.0d;
+			for (int docID : graphNodes.keySet()) {
+				if (graphNodes.get(docID).getOutLinkSize() == 0) {
+					dangling_nodes += graphNodes.get(docID).getPageRanking();
+				}
+			}
+			dangling_nodes = (dumping_factor * dangling_nodes) / graphNodes.size();
+
+			for (Node node : graphNodes.values()) {
+				double r = 0.0d;
+				for (Integer source : node.getInLinks()) {
+					r += pagerank_current.get(source) / graphNodes.get(source).getOutLinkSize();
+				}
+				r = dumping_factor * r + dangling_nodes + teleport;
+				pagerank_new.put(node.getDocId(), r);
+			}
+			for (Node node : graphNodes.values()) {
+				pagerank_current.put(node.getDocId(), pagerank_new.get(node.getDocId()));
+			}
+		}
+		for (int keys : graphNodes.keySet()) {
+			graphNodes.get(keys).setPageRanking(pagerank_current.get(keys));
+		}
+
+		try {
+			FileOutputStream fos = new FileOutputStream(new File("PageRanking.dat"));
+			ObjectOutputStream oos = new ObjectOutputStream(fos);
+
+			oos.writeObject(graphNodes);
+			oos.writeObject(null);
+			oos.close();
+			fos.close();
+
+		} catch (FileNotFoundException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+
 	}
 
 	public static int BKDRHash(String str) {
@@ -166,6 +208,8 @@ public class Graph {
 		}
 		return (hash & 0x7FFFFFFF);
 	}
+	
+	
 
 	public static void main(String[] args) {
 		Graph g = new Graph();
